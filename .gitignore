@@ -1,0 +1,11 @@
+# Real API keys — never commit
+prices.config.json
+
+# Local-only admin/config page (has setup details for the keys)
+admin.html
+
+# Build artefacts / OS noise
+node_modules/
+.DS_Store
+Thumbs.db
+*.log

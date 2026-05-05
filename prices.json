@@ -1,0 +1,159 @@
+{
+  "updatedAt": "2026-05-05T19:55:00.000Z",
+  "provider": "rapidapi",
+  "currency": "GBP",
+  "adults": 2,
+  "_note": "Hotel prices below are INDICATIVE — sampled from the same calendar dates one year earlier (March 2027). Booking.com only indexes rates ~16 months ahead, so March 2028 isn't bookable yet. Real prices unlock around Jan-Feb 2027. Days 7-12 timed out due to RapidAPI free-tier rate limits — re-run later.",
+  "flights": [],
+  "hotels": [
+    {
+      "dayId": 1,
+      "name": "LondonHouse Chicago",
+      "city": "Chicago",
+      "checkin": "2028-03-18",
+      "checkout": "2028-03-20",
+      "nights": 2,
+      "isIndicative": true,
+      "sampledFrom": { "checkin": "2027-03-18", "checkout": "2027-03-20", "yearsBack": 1 },
+      "matchedName": "LondonHouse Chicago, Curio Collection by Hilton",
+      "perNight": 161.32,
+      "total": 322.63,
+      "currency": "GBP",
+      "reviewScore": 9.1,
+      "reviewCount": 7231,
+      "reviewWord": "Wonderful"
+    },
+    {
+      "dayId": 2,
+      "name": "21c Museum Hotel St Louis",
+      "city": "St Louis",
+      "checkin": "2028-03-20",
+      "checkout": "2028-03-21",
+      "nights": 1,
+      "isIndicative": true,
+      "sampledFrom": { "checkin": "2027-03-20", "checkout": "2027-03-21", "yearsBack": 1 },
+      "matchedName": "21c Museum Hotel St Louis",
+      "perNight": 111.55,
+      "total": 111.55,
+      "currency": "GBP",
+      "reviewScore": 5.3,
+      "reviewCount": 1013,
+      "reviewWord": "Pleasant"
+    },
+    {
+      "dayId": 3,
+      "name": "Best Western Route 66 Rail Haven",
+      "city": "Springfield",
+      "checkin": "2028-03-21",
+      "checkout": "2028-03-22",
+      "nights": 1,
+      "isIndicative": true,
+      "sampledFrom": { "checkin": "2027-03-21", "checkout": "2027-03-22", "yearsBack": 1 },
+      "matchedName": "Best Western Route 66 Rail Haven",
+      "perNight": 92.82,
+      "total": 92.82,
+      "currency": "GBP",
+      "reviewScore": 8.0,
+      "reviewCount": 903,
+      "reviewWord": "Very Good"
+    },
+    {
+      "dayId": 4,
+      "name": "21c Museum Hotel Oklahoma City",
+      "city": "Oklahoma City",
+      "checkin": "2028-03-22",
+      "checkout": "2028-03-23",
+      "nights": 1,
+      "isIndicative": true,
+      "sampledFrom": { "checkin": "2027-03-22", "checkout": "2027-03-23", "yearsBack": 1 },
+      "matchedName": "21c Museum Hotel Oklahoma City",
+      "perNight": 307.86,
+      "total": 307.86,
+      "currency": "GBP",
+      "reviewScore": 9.1,
+      "reviewCount": 779,
+      "reviewWord": "Wonderful"
+    },
+    {
+      "dayId": 5,
+      "name": "Big Texan Motel",
+      "city": "Amarillo",
+      "checkin": "2028-03-23",
+      "checkout": "2028-03-24",
+      "nights": 1,
+      "isIndicative": true,
+      "sampledFrom": { "checkin": "2027-03-23", "checkout": "2027-03-24", "yearsBack": 1 },
+      "matchedName": "The Big Texan Motel",
+      "perNight": 81.55,
+      "total": 81.55,
+      "currency": "GBP",
+      "reviewScore": 8.3,
+      "reviewCount": 2985,
+      "reviewWord": "Very Good"
+    },
+    {
+      "dayId": 6,
+      "name": "La Fonda on the Plaza",
+      "city": "Santa Fe",
+      "checkin": "2028-03-24",
+      "checkout": "2028-03-26",
+      "nights": 2,
+      "isIndicative": true,
+      "sampledFrom": { "checkin": "2027-03-24", "checkout": "2027-03-26", "yearsBack": 1 },
+      "matchedName": "La Fonda on the Plaza",
+      "perNight": 241.27,
+      "total": 482.53,
+      "currency": "GBP",
+      "reviewScore": 9.1,
+      "reviewCount": 476,
+      "reviewWord": "Wonderful"
+    },
+    {
+      "dayId": 7,
+      "name": "Los Poblanos Historic Inn",
+      "city": "Albuquerque",
+      "nights": 1,
+      "error": "rate-limited — retry later"
+    },
+    {
+      "dayId": 8,
+      "name": "Wigwam Motel Holbrook",
+      "city": "Holbrook",
+      "nights": 1,
+      "error": "rate-limited — retry later"
+    },
+    {
+      "dayId": 9,
+      "name": "El Tovar Hotel",
+      "city": "Grand Canyon",
+      "nights": 1,
+      "error": "rate-limited — retry later"
+    },
+    {
+      "dayId": 10,
+      "name": "Hotel Brunswick Kingman",
+      "city": "Kingman",
+      "nights": 1,
+      "error": "rate-limited — retry later"
+    },
+    {
+      "dayId": 11,
+      "name": "Shutters on the Beach",
+      "city": "Santa Monica",
+      "nights": 2,
+      "error": "rate-limited — retry later"
+    },
+    {
+      "dayId": 12,
+      "name": "Disney's Grand Californian Hotel & Spa",
+      "city": "Anaheim",
+      "nights": 3,
+      "error": "rate-limited — retry later"
+    }
+  ],
+  "fx": {
+    "GBPUSD": 1.3534,
+    "GBPEUR": 1.1582,
+    "at": "2026-05-05T20:11:09.203Z"
+  }
+}

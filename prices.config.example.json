@@ -1,0 +1,54 @@
+{
+  "_README": [
+    "Copy this file to prices.config.json and paste your real keys.",
+    "prices.config.json should NOT be shared/committed — it contains secrets.",
+    "",
+    "Two providers — use either or both:",
+    "  rapidapi  → easy signup at https://rapidapi.com, subscribe to 'Booking COM 15' by DataCrawler (hotels + cars + maybe flights)",
+    "  amadeus   → official airline-industry API at https://developers.amadeus.com (best for flights)",
+    "",
+    "Recommended: rapidapi for hotels + amadeus for flights. Skip a section if you don't want it."
+  ],
+
+  "provider": "rapidapi",
+  "currency": "GBP",
+  "adults": 2,
+
+  "rapidapi": {
+    "key": "PASTE_YOUR_X-RAPIDAPI-KEY_HERE",
+    "_note": "From your RapidAPI dashboard. One key works for any subscriptions on your account."
+  },
+
+  "amadeus": {
+    "apiKey": "PASTE_YOUR_AMADEUS_API_KEY_HERE",
+    "apiSecret": "PASTE_YOUR_AMADEUS_API_SECRET_HERE",
+    "environment": "test",
+    "_note": "Test environment returns sample data. Click 'Go Production' in Amadeus dashboard for real prices, then change to 'production'."
+  },
+
+  "routes": {
+    "outbound": [
+      { "from": "LHR", "to": "ORD", "date": "2028-03-18" },
+      { "from": "LGW", "to": "ORD", "date": "2028-03-18" }
+    ],
+    "return": [
+      { "from": "LAX", "to": "LHR", "date": "2028-04-04" },
+      { "from": "LAX", "to": "LGW", "date": "2028-04-04" }
+    ]
+  },
+
+  "hotels": [
+    { "dayId": 1,  "name": "LondonHouse Chicago",                    "city": "Chicago",        "state": "IL", "checkin": "2028-03-18", "checkout": "2028-03-20" },
+    { "dayId": 2,  "name": "21c Museum Hotel St Louis",              "city": "St Louis",       "state": "MO", "checkin": "2028-03-20", "checkout": "2028-03-21" },
+    { "dayId": 3,  "name": "Best Western Route 66 Rail Haven",       "city": "Springfield",    "state": "MO", "checkin": "2028-03-21", "checkout": "2028-03-22" },
+    { "dayId": 4,  "name": "21c Museum Hotel Oklahoma City",         "city": "Oklahoma City",  "state": "OK", "checkin": "2028-03-22", "checkout": "2028-03-23" },
+    { "dayId": 5,  "name": "Big Texan Motel",                        "city": "Amarillo",       "state": "TX", "checkin": "2028-03-23", "checkout": "2028-03-24" },
+    { "dayId": 6,  "name": "La Fonda on the Plaza",                  "city": "Santa Fe",       "state": "NM", "checkin": "2028-03-24", "checkout": "2028-03-26" },
+    { "dayId": 7,  "name": "Los Poblanos Historic Inn",              "city": "Albuquerque",    "state": "NM", "checkin": "2028-03-26", "checkout": "2028-03-27" },
+    { "dayId": 8,  "name": "Wigwam Motel Holbrook",                  "city": "Holbrook",       "state": "AZ", "checkin": "2028-03-27", "checkout": "2028-03-28" },
+    { "dayId": 9,  "name": "El Tovar Hotel",                         "city": "Grand Canyon",   "state": "AZ", "checkin": "2028-03-28", "checkout": "2028-03-29" },
+    { "dayId": 10, "name": "Hotel Brunswick Kingman",                "city": "Kingman",        "state": "AZ", "checkin": "2028-03-29", "checkout": "2028-03-30" },
+    { "dayId": 11, "name": "Shutters on the Beach",                  "city": "Santa Monica",   "state": "CA", "checkin": "2028-03-30", "checkout": "2028-04-01" },
+    { "dayId": 12, "name": "Disney's Grand Californian Hotel & Spa", "city": "Anaheim",        "state": "CA", "checkin": "2028-04-01", "checkout": "2028-04-04" }
+  ]
+}

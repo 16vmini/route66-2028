@@ -1,0 +1,958 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Route 66 — A 40th Birthday Adventure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<style>
+  :root {
+    --cream: #FAF3E7;
+    --cream-2: #F2E7D0;
+    --sand: #E5D3B0;
+    --rust: #C44536;
+    --rust-dark: #8E2F22;
+    --brown: #5B3A29;
+    --ink: #2A211B;
+    --denim: #5C7A8A;
+    --teal: #2F6E78;
+    --gold: #D9A441;
+    --shadow: 0 10px 30px rgba(91, 58, 41, 0.15);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--ink);
+    background: var(--cream);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header.hero {
+    background: linear-gradient(135deg, var(--brown) 0%, var(--rust-dark) 100%);
+    color: var(--cream);
+    padding: 32px 24px 28px;
+    text-align: center;
+    border-bottom: 6px solid var(--gold);
+    position: relative;
+  }
+  header.hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 40px, transparent 40px 80px);
+    pointer-events: none;
+  }
+  header.hero h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(28px, 4.4vw, 44px);
+    margin: 0 0 8px; letter-spacing: 0.5px;
+  }
+  header.hero .subtitle {
+    font-family: 'Special Elite', monospace;
+    font-size: clamp(13px, 1.6vw, 16px);
+    opacity: 0.92; letter-spacing: 1px;
+  }
+  header.hero .meta {
+    margin-top: 14px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+    font-size: 14px;
+  }
+  header.hero .meta span { background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 20px; }
+  header.hero .meta strong { color: var(--gold); }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  @media (max-width: 760px) { .panels { grid-template-columns: 1fr; } }
+  .panel {
+    background: white; border: 1px solid var(--sand);
+    border-radius: 12px; padding: 16px 18px; box-shadow: var(--shadow);
+  }
+  .panel h3 {
+    margin: 0 0 10px; font-family: 'Playfair Display', serif;
+    font-size: 17px; color: var(--rust-dark);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .panel ul { margin: 0; padding-left: 18px; font-size: 14px; }
+  .panel li { margin-bottom: 6px; }
+  .panel li strong { color: var(--brown); }
+
+  #map {
+    height: 480px;
+    border-radius: 14px; box-shadow: var(--shadow);
+    border: 1px solid var(--sand);
+    margin-bottom: 28px;
+  }
+  @media (max-width: 760px) { #map { height: 360px; } }
+
+  .leaflet-container { background: #e8dec3; }
+
+  .shield-marker {
+    background: var(--rust);
+    color: white;
+    border: 3px solid var(--cream);
+    border-radius: 50%;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Special Elite', monospace;
+    font-weight: bold; font-size: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .shield-marker.active {
+    background: var(--gold); color: var(--ink);
+    transform: scale(1.25);
+    border-color: var(--rust-dark);
+  }
+  .shield-marker.disney {
+    background: #5C7A8A; color: white;
+    border-color: var(--cream);
+  }
+  .shield-marker.start-end {
+    background: var(--brown); color: white;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--brown);
+    margin: 0 0 18px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--sand);
+  }
+
+  .days { display: flex; flex-direction: column; gap: 18px; }
+  .day {
+    background: white;
+    border: 1px solid var(--sand);
+    border-left: 6px solid var(--rust);
+    border-radius: 12px;
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+    scroll-margin-top: 16px;
+    transition: transform 0.2s ease, border-left-color 0.2s ease;
+  }
+  .day:hover { transform: translateY(-2px); }
+  .day.active {
+    border-left-color: var(--gold);
+    box-shadow: 0 12px 36px rgba(217, 164, 65, 0.35);
+  }
+  .day.disney-day {
+    border-left-color: #5C7A8A;
+    background: linear-gradient(180deg, #F0F4F8 0%, white 80%);
+  }
+
+  .day-header {
+    display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .day-num {
+    font-family: 'Special Elite', monospace;
+    font-size: 13px; color: var(--rust-dark);
+    background: var(--cream-2); padding: 3px 10px; border-radius: 4px;
+    letter-spacing: 1px;
+  }
+  .day-date {
+    font-family: 'Special Elite', monospace;
+    font-size: 12px; color: var(--brown);
+    background: white; padding: 3px 10px; border-radius: 4px;
+    border: 1px solid var(--sand);
+  }
+  .day-location {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; color: var(--ink); margin: 0;
+  }
+  .day-state { color: var(--denim); font-style: italic; font-size: 15px; }
+  .day-nights {
+    font-size: 12px; color: var(--brown);
+    background: var(--sand); padding: 2px 8px; border-radius: 10px;
+  }
+
+  .day-summary { font-size: 15px; color: #4a3d34; margin: 6px 0 14px; }
+
+  .day-meta {
+    display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--brown);
+    margin-bottom: 14px;
+    padding-bottom: 10px; border-bottom: 1px dashed var(--sand);
+  }
+  .day-meta span::before { content: '— '; color: var(--gold); }
+
+  .day-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+  }
+  @media (max-width: 700px) { .day-grid { grid-template-columns: 1fr; } }
+
+  .subhead {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--rust-dark); font-weight: 600; margin: 0 0 6px;
+  }
+  .highlights { margin: 0; padding-left: 18px; font-size: 14px; }
+  .highlights li { margin-bottom: 4px; }
+
+  .hotel {
+    background: var(--cream);
+    border: 1px solid var(--sand);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .hotel-name { font-weight: 600; color: var(--brown); margin-bottom: 4px; }
+  .hotel-status {
+    display: inline-block; font-size: 11px; padding: 2px 7px;
+    border-radius: 10px; margin-left: 6px;
+    background: var(--denim); color: white;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .hotel-status.upgrade { background: var(--gold); color: var(--ink); }
+  .hotel-status.iconic { background: var(--rust); color: white; }
+  .hotel-status.tbd { background: #999; color: white; }
+  .hotel-note { font-size: 13px; color: #5a4a3e; margin-top: 6px; font-style: italic; }
+  .hotel-links { margin-top: 8px; display: flex; gap: 10px; flex-wrap: wrap; font-size: 13px; }
+  .hotel-links a {
+    color: var(--teal); text-decoration: none; border-bottom: 1px dotted var(--teal);
+  }
+  .hotel-links a:hover { color: var(--rust); border-color: var(--rust); }
+
+  .alts {
+    margin-top: 10px; font-size: 13px; padding-top: 8px;
+    border-top: 1px dashed var(--sand);
+  }
+  .alts strong { color: var(--brown); }
+  .alts ul { margin: 4px 0 0; padding-left: 18px; }
+
+  footer {
+    text-align: center; padding: 32px 16px;
+    color: var(--brown); font-size: 13px;
+    font-family: 'Special Elite', monospace;
+    border-top: 1px dashed var(--sand);
+    margin-top: 32px;
+  }
+
+  /* ----- Birthday balloons ----- */
+  .balloon {
+    position: fixed; bottom: -120px;
+    width: 38px; height: 48px; border-radius: 50% / 55%;
+    pointer-events: none; z-index: 9999;
+    animation: balloon-float 9s ease-out forwards;
+    will-change: transform, bottom, opacity;
+  }
+  .balloon::before {
+    content: ''; position: absolute; bottom: -3px; left: 50%;
+    width: 0; height: 0; transform: translateX(-50%);
+    border-left: 5px solid transparent; border-right: 5px solid transparent;
+    border-top: 7px solid currentColor; opacity: 0.7;
+  }
+  .balloon::after {
+    content: ''; position: absolute; top: 100%; left: 50%;
+    width: 1px; height: 70px; background: rgba(60, 40, 20, 0.35);
+    transform: translateX(-50%);
+  }
+  @keyframes balloon-float {
+    0%   { bottom: -120px; opacity: 0; }
+    8%   { opacity: 1; }
+    100% { bottom: 115vh; opacity: 0.85; transform: translateX(var(--drift, 0px)) rotate(var(--rot, 0deg)); }
+  }
+
+  /* ----- Car hire panel ----- */
+  .car-link {
+    display:block; padding:10px 12px; border:1px solid var(--sand);
+    border-radius:8px; text-decoration:none; color:var(--ink);
+    background:var(--cream); transition: transform .15s, border-color .15s;
+  }
+  .car-link:hover { transform: translateY(-1px); border-color: var(--gold); }
+  .car-link .lbl { font-weight:600; color:var(--rust-dark); }
+  .car-link .sub { font-size:12px; color:var(--brown); margin-top:2px; }
+
+  /* ----- Budget summary ----- */
+  .budget-table {
+    width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 6px;
+  }
+  .budget-table th, .budget-table td {
+    padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--sand);
+  }
+  .budget-table th {
+    font-family: 'Special Elite', monospace;
+    font-size: 12px; letter-spacing: 1px; color: var(--rust-dark);
+  }
+  .budget-table td.num { text-align: right; font-family: 'JetBrains Mono', 'Special Elite', monospace; color: var(--brown); }
+  .budget-table tr.total td { font-weight: 700; color: var(--rust-dark); border-top: 2px solid var(--rust); border-bottom: none; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>Route 66 — A 40th Birthday Adventure</h1>
+  <div class="subtitle">Chicago &nbsp;·&nbsp; The Mother Road &nbsp;·&nbsp; Santa Monica &nbsp;·&nbsp; Disneyland</div>
+  <div class="meta">
+    <span><strong>Sat 18 Mar – Tue 4 Apr 2028</strong></span>
+    <span><strong>17</strong> nights</span>
+    <span><strong>~2,500</strong> miles</span>
+    <span><strong>8</strong> states</span>
+    <span>+ <strong>Disney</strong> finale</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="panels">
+    <div class="panel">
+      <h3>Locked In</h3>
+      <ul>
+        <li><strong>Birthday</strong> — celebrated at home on Wed 15 March 2028</li>
+        <li><strong>Depart</strong> — Sat 18 March 2028 (LHR → ORD)</li>
+        <li><strong>Return</strong> — Tue 4 April 2028 (LAX → LHR)</li>
+        <li><strong>Vegas</strong> — skipped (separate trip later); replaced with authentic AZ Route 66 (Williams / Seligman / Kingman / Oatman)</li>
+        <li><strong>Hotels</strong> — milestone-trip upgrade tier</li>
+        <li><strong>Disney</strong> — 3 nights at Anaheim to wrap the trip</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Book Early — Priority Order</h3>
+      <ul>
+        <li><strong>El Tovar (Grand Canyon, 28 Mar 2028)</strong> — opens ~28 Feb 2027. Single biggest "book or miss" item.</li>
+        <li><strong>Disney's Grand Californian (1–4 Apr 2028)</strong> — Disney opens hotel bookings ~Sep 2027 (~7 months ahead).</li>
+        <li><strong>Wigwam Motel, Holbrook (27 Mar 2028)</strong> — limited rooms, book once windows open in 2027.</li>
+        <li><strong>La Fonda Santa Fe (24–25 Mar 2028)</strong> — plaza-view rooms book early.</li>
+        <li><strong>Flights (LHR↔ORD/LAX)</strong> — best fares ~May–Jul 2027 (9–11 months ahead).</li>
+        <li><strong>One-way car hire (ORD pickup, LAX drop)</strong> — price ~Jul–Sep 2027 (6–9 months ahead).</li>
+        <li><strong>Disney park tickets + Lightning Lane</strong> — buy ~Oct–Nov 2027.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom: 24px;">
+    <h3>Car Hire — Chicago O'Hare → LAX (one-way, 15 days)</h3>
+    <p style="margin: 0 0 10px; font-size: 14px; color: #5a4a3e;">
+      Pick up at <strong>ORD on Mon 20 Mar 2028</strong>, drop at <strong>LAX on Tue 4 Apr 2028</strong>.
+      One-way drop fees vary a lot — comparing 4 sites usually saves £100–£300. Mid-size SUV recommended for two with luggage; convertible is fun but March can be chilly/wet on the high-altitude bits.
+    </p>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:10px; font-size:14px;">
+      <a class="car-link" target="_blank" rel="noopener"
+         href="https://www.kayak.co.uk/cars/Chicago-OHare-Airport-(ORD),Illinois,United-States/Los-Angeles-International-Airport-(LAX),California,United-States/2028-03-20/2028-04-04">
+        <div class="lbl">Kayak</div><div class="sub">ORD → LAX, 20 Mar – 4 Apr 2028 ↗</div></a>
+      <a class="car-link" target="_blank" rel="noopener"
+         href="https://www.skyscanner.net/carhire/results/ORDA/LAXA/2028-03-20T10:00/2028-04-04T10:00/">
+        <div class="lbl">Skyscanner Cars</div><div class="sub">ORD → LAX, prefilled ↗</div></a>
+      <a class="car-link" target="_blank" rel="noopener"
+         href="https://www.discovercars.com/?country=us&pickup_date=2028-03-20&dropoff_date=2028-04-04&pickup_loc_id=ORD&dropoff_loc_id=LAX">
+        <div class="lbl">Discover Cars</div><div class="sub">Often cheapest aggregator ↗</div></a>
+      <a class="car-link" target="_blank" rel="noopener"
+         href="https://www.google.com/search?q=one+way+car+hire+Chicago+ORD+to+LAX+Los+Angeles+20+March+2028+to+4+April+2028">
+        <div class="lbl">Google search</div><div class="sub">Quick comparison fallback ↗</div></a>
+      <a class="car-link" target="_blank" rel="noopener" style="border-color: var(--gold); background: #FFF8E7;"
+         href="https://www.google.com/search?q=Hertz+Adventure+collection+Mustang+Camaro+Chicago+rental">
+        <div class="lbl">Hertz Adventure Collection</div><div class="sub">Rent a Mustang/Camaro/Corvette — milestone trip option ↗</div></a>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom: 24px;">
+    <h3>Flights — Live Search Links</h3>
+    <p style="margin: 0 0 10px; font-size: 14px; color: #5a4a3e;">
+      Click any link to open the search engine with dates pre-filled. Prices update automatically every time you visit.
+      Open-jaw routing (fly to Chicago, return from LA) usually beats round-trip from one city.
+    </p>
+    <div id="flight-links" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; font-size: 14px;"></div>
+  </div>
+
+  <div id="map"></div>
+
+  <h2 class="section-title">Day-by-Day</h2>
+  <div id="days" class="days"></div>
+
+  <div class="panel" style="margin-top: 28px;">
+    <h3>Budget Snapshot — Indicative</h3>
+    <p style="margin: 0 0 8px; font-size: 13px; color: #5a4a3e;">
+      Rough estimates for two adults. <strong>Booking.com only indexes hotel prices ~16 months ahead</strong> — actual March 2028 rates aren't bookable yet, so hotel figures are sampled from the same dates one year earlier (March 2027) as a seasonal indicator. Real prices unlock around <strong>Jan–Feb 2027</strong>.
+    </p>
+    <table class="budget-table">
+      <thead><tr><th>Line item</th><th>Notes</th><th style="text-align:right;">Estimate (£)</th></tr></thead>
+      <tbody>
+        <tr><td>Flights (open-jaw, 2 adults)</td><td>LON → ORD + LAX → LON, premium economy</td><td class="num">2,400 – 3,800</td></tr>
+        <tr><td>One-way car hire (15 days)</td><td>ORD pickup, LAX drop, mid-size SUV inc. drop fee</td><td class="num">900 – 1,500</td></tr>
+        <tr><td>Fuel</td><td>~2,500 mi ÷ 27 mpg ≈ 92 US gal × $3.50 ≈ £240</td><td class="num">220 – 320</td></tr>
+        <tr><td>Hotels (17 nights, upgrade tier)</td><td>Mix of iconic + boutique + Disney Grand Californian</td><td class="num">5,200 – 7,500</td></tr>
+        <tr><td>Disney park tickets (3 days, 2 adults)</td><td>Park Hopper + Genie+ if added</td><td class="num">700 – 1,000</td></tr>
+        <tr><td>Food, attractions, tips</td><td>~£100/day × 18 days, 2 adults</td><td class="num">1,800 – 2,400</td></tr>
+        <tr><td>Travel insurance, ESTA, sundries</td><td></td><td class="num">200 – 350</td></tr>
+        <tr class="total"><td>Trip total (excl. car-buying side-project)</td><td></td><td class="num">11,400 – 16,900</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel" style="margin-top: 28px;">
+    <h3>Still To Decide</h3>
+    <ul>
+      <li><strong>Tulsa stop</strong> — pass through, half-day stop, or overnight? (would push OKC to Day 6)</li>
+      <li><strong>Kansas spur</strong> — add the 13-mile Galena/Baxter Springs detour for the full 8-state Route 66?</li>
+      <li><strong>Car class</strong> — full-size sedan, SUV, or convertible? (March can be cold/wet for a convertible)</li>
+      <li><strong>Disney parks plan</strong> — Park Hopper or single park per day? Genie+ / Lightning Lane?</li>
+      <li><strong>Flight carrier</strong> — BA, Virgin Atlantic, or American (direct LHR ↔ ORD/LAX)?</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  Get your kicks &nbsp; · &nbsp; on Route Sixty-Six
+  <div style="margin-top:10px; font-size:11px; opacity:0.55;">
+    <a href="secret.html" style="color:inherit; text-decoration:none; border-bottom:1px dotted;">this is definitely not a secret page</a>
+  </div>
+</footer>
+
+<script>
+// Easter-egg keystroke — opens the secret page
+(function(){
+  const seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let i = 0;
+  document.addEventListener('keydown', e => {
+    const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (k === seq[i]) { i++; if (i === seq.length) { i = 0; window.location.href = 'secret.html'; } }
+    else { i = (k === seq[0]) ? 1 : 0; }
+  });
+})();
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+/* ---------- HOTEL DATES (drives Booking.com prefill) ---------- */
+const stayCheckIn = {
+  1:  '2028-03-18', // Chicago (2 nights)
+  2:  '2028-03-20', // St Louis
+  3:  '2028-03-21', // Springfield MO
+  4:  '2028-03-22', // OKC
+  5:  '2028-03-23', // Amarillo
+  6:  '2028-03-24', // Santa Fe (2 nights)
+  7:  '2028-03-26', // Albuquerque
+  8:  '2028-03-27', // Holbrook
+  9:  '2028-03-28', // Grand Canyon
+  10: '2028-03-29', // Kingman
+  11: '2028-03-30', // Santa Monica (2 nights)
+  12: '2028-04-01'  // Disney (3 nights)
+};
+function addDays(dateStr, days) {
+  const d = new Date(dateStr + 'T00:00:00Z');
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+function bookingUrl(query, checkin, checkout) {
+  return 'https://www.booking.com/searchresults.html?ss=' + encodeURIComponent(query)
+    + '&checkin=' + checkin + '&checkout=' + checkout
+    + '&group_adults=2&no_rooms=1&group_children=0';
+}
+
+/* ---------- FLIGHT SEARCH LINKS ---------- */
+const OUTBOUND = '2028-03-18';
+const RETURN   = '2028-04-04';
+function skyOneWay(from, to, dateYMD) {
+  // Skyscanner uses YYMMDD in their slug-style URL
+  const yy = dateYMD.slice(2, 4), mm = dateYMD.slice(5, 7), dd = dateYMD.slice(8, 10);
+  return `https://www.skyscanner.net/transport/flights/${from}/${to}/${yy}${mm}${dd}/?adults=2&cabinclass=economy`;
+}
+function gflightsMulti() {
+  // Open-jaw multi-city: LHR/LGW → ORD then LAX → LHR/LGW
+  return 'https://www.google.com/travel/flights?q=' + encodeURIComponent(
+    `flights from London to Chicago on ${OUTBOUND}, then Los Angeles to London on ${RETURN}, 2 adults`
+  );
+}
+const flightLinks = [
+  { label: 'Open-jaw (recommended)', sub: 'LON → ORD outbound · LAX → LON return',
+    url: gflightsMulti(), kind: 'primary' },
+  { label: 'Outbound: LHR → ORD', sub: '18 Mar 2028',  url: skyOneWay('lhr','ord', OUTBOUND) },
+  { label: 'Outbound: LGW → ORD', sub: '18 Mar 2028',  url: skyOneWay('lgw','ord', OUTBOUND) },
+  { label: 'Return: LAX → LHR',   sub: '4 Apr 2028',   url: skyOneWay('lax','lhr', RETURN) },
+  { label: 'Return: LAX → LGW',   sub: '4 Apr 2028',   url: skyOneWay('lax','lgw', RETURN) },
+  { label: 'Compare on Skyscanner', sub: 'Multi-city / open-jaw search',
+    url: 'https://www.skyscanner.net/g/multicity-flight-search/' }
+];
+
+const flightContainer = document.getElementById('flight-links');
+flightLinks.forEach(f => {
+  const a = document.createElement('a');
+  a.href = f.url; a.target = '_blank'; a.rel = 'noopener';
+  a.style.cssText = 'display:block;padding:10px 12px;border:1px solid var(--sand);border-radius:8px;text-decoration:none;color:var(--ink);background:var(--cream);transition:all .15s;';
+  if (f.kind === 'primary') a.style.cssText += 'border-color:var(--gold);background:#FFF8E7;';
+  a.innerHTML = `<div style="font-weight:600;color:var(--rust-dark);">${f.label}</div><div style="font-size:12px;color:var(--brown);margin-top:2px;">${f.sub} ↗</div>`;
+  a.onmouseenter = () => a.style.transform = 'translateY(-1px)';
+  a.onmouseleave = () => a.style.transform = 'translateY(0)';
+  flightContainer.appendChild(a);
+});
+
+/* ---------- TRIP DATA — edit here to update the page ---------- */
+const trip = {
+  days: [
+    {
+      id: 1, label: "Day 1–2", nights: 2,
+      date: "Sat 18 – Sun 19 Mar 2028",
+      location: "Chicago", state: "Illinois",
+      coords: [41.8781, -87.6298],
+      drive: "Arrive — fly LHR → ORD (Sat 18 Mar)",
+      summary: "Two nights to land, shake off the jet lag, and stand under the 'Begin Route 66' sign before picking up the car.",
+      highlights: [
+        "'Begin Route 66' sign on Adams Street",
+        "Chicago Riverwalk + architecture boat tour",
+        "Cloud Gate (The Bean) at Millennium Park",
+        "Deep-dish dinner — Lou Malnati's or Pequod's",
+        "Magnificent Mile + Art Institute"
+      ],
+      hotel: {
+        name: "LondonHouse Chicago",
+        status: "Upgrade pick",
+        statusClass: "upgrade",
+        note: "On the river bend with iconic LH Rooftop bar — perfect first-night welcome view of the city."
+      },
+      alts: [
+        "The Langham Chicago — luxury, river-front",
+        "Royal Sonesta River North — Bon Voyage's mid-range pick"
+      ]
+    },
+    {
+      id: 2, label: "Day 3", nights: 1,
+      date: "Mon 20 Mar 2028",
+      location: "St Louis", state: "Missouri",
+      coords: [38.6270, -90.1994],
+      drive: "Chicago → St Louis · ~300 mi · Joliet, Wilmington (Gemini Giant), Pontiac, Springfield IL",
+      summary: "First day on the road. Long drive, plenty of photo stops. Cross the Mississippi into Missouri and reward yourselves under the Gateway Arch.",
+      highlights: [
+        "Gemini Giant, Wilmington",
+        "Pontiac murals + Route 66 Hall of Fame",
+        "Springfield, IL — Lincoln history",
+        "MLK Memorial Bridge crossing",
+        "Ted Drewes frozen custard",
+        "Gateway Arch + tram to the top"
+      ],
+      hotel: {
+        name: "21c Museum Hotel St Louis",
+        status: "Upgrade pick",
+        statusClass: "upgrade",
+        note: "Boutique built around contemporary-art galleries (free, open 24/7 to guests). Walkable to the Arch."
+      },
+      alts: [
+        "The Last Hotel — garment-district loft style",
+        "Pennywell St Louis Downtown — Bon Voyage's pick"
+      ]
+    },
+    {
+      id: 3, label: "Day 4", nights: 1,
+      date: "Tue 21 Mar 2028",
+      location: "Springfield", state: "Missouri",
+      coords: [37.2090, -93.2923],
+      drive: "St Louis → Springfield MO · ~215 mi · Meramec Caverns",
+      summary: "Cross into the green Ozarks. Springfield calls itself the birthplace of Route 66 — this is where the road was first championed.",
+      highlights: [
+        "Meramec Caverns (Jesse James lore)",
+        "Route 66 Springfield history walk",
+        "Wild Bill Hickok Trail",
+        "Original Route 66 alignments around town"
+      ],
+      hotel: {
+        name: "Best Western Route 66 Rail Haven",
+        status: "Iconic",
+        statusClass: "iconic",
+        note: "1938 motor court restored to neon-lit glory — Elvis stayed here. THE Route 66 stay in Springfield; no luxury hotel in town beats it for vibe."
+      },
+      alts: []
+    },
+    {
+      id: 4, label: "Day 5", nights: 1,
+      date: "Wed 22 Mar 2028",
+      location: "Oklahoma City", state: "Oklahoma",
+      coords: [35.4676, -97.5164],
+      drive: "Springfield MO → Oklahoma City · ~350 mi · Galena KS spur (optional) + Tulsa pass-through",
+      summary: "Long driving day across red-earth plains. Worth carving in time for a Tulsa stop. Optional 30-minute detour through SE Kansas adds the 8th state of Route 66.",
+      highlights: [
+        "Galena, KS — 13-mile Kansas Route 66 spur (optional)",
+        "Tulsa: Golden Driller + Center of the Universe (recommended add)",
+        "Bricktown canal walk in OKC",
+        "Oklahoma City National Memorial",
+        "First American Museum"
+      ],
+      hotel: {
+        name: "21c Museum Hotel Oklahoma City",
+        status: "Upgrade pick",
+        statusClass: "upgrade",
+        note: "Contemporary-art boutique inside a converted Ford Model T plant. Bricktown-adjacent."
+      },
+      alts: [
+        "The Colcord Hotel — historic 1910 building, Bon Voyage's pick"
+      ]
+    },
+    {
+      id: 5, label: "Day 6", nights: 1,
+      date: "Thu 23 Mar 2028",
+      location: "Amarillo", state: "Texas",
+      coords: [35.2220, -101.8313],
+      drive: "Oklahoma City → Amarillo · ~260 mi · Texas Panhandle",
+      summary: "Big sky country. Cadillac Ranch is the photo everyone wants. Bring a can of spray paint — it's part of the tradition.",
+      highlights: [
+        "Cadillac Ranch — half-buried Caddies, bring spray paint",
+        "Original Route 66 strip + retro neon",
+        "Palo Duro Canyon (the 'Texas Grand Canyon') if time allows",
+        "72oz steak challenge at the Big Texan (optional!)"
+      ],
+      hotel: {
+        name: "The Big Texan Motel",
+        status: "Iconic",
+        statusClass: "iconic",
+        note: "Cowboy-kitsch but fully on-theme. Texas-shaped pool, Western-saloon dinner attached. Amarillo's iconic stay beats any luxury alternative for a Route 66 trip."
+      },
+      alts: []
+    },
+    {
+      id: 6, label: "Day 7–8", nights: 2,
+      date: "Fri 24 – Sat 25 Mar 2028",
+      location: "Santa Fe", state: "New Mexico",
+      coords: [35.6870, -105.9378],
+      drive: "Amarillo → Santa Fe · ~285 mi · Tucumcari neon stop",
+      summary: "Two nights in adobe country. 7,200 ft altitude — pack warm layers in March (snow possible). Art galleries, world-class food, golden-hour adobe walls.",
+      highlights: [
+        "Santa Fe Plaza + Palace of the Governors",
+        "Canyon Road galleries",
+        "Meow Wolf — House of Eternal Return",
+        "Georgia O'Keeffe Museum",
+        "New Mexican food (red or green chile?)",
+        "Sunset margaritas at La Fonda's rooftop"
+      ],
+      hotel: {
+        name: "La Fonda on the Plaza",
+        status: "Upgrade pick",
+        statusClass: "upgrade",
+        note: "Historic, ON the Plaza, Spanish colonial revival. Plaza-view rooms are the magic. A genuine highlight stop on the route."
+      },
+      alts: [
+        "Inn and Spa at Loretto — adobe-style, central, slightly more contemporary",
+        "Rosewood Inn of the Anasazi — small luxury boutique",
+        "Inn of the Governors — Bon Voyage's solid mid-range pick"
+      ]
+    },
+    {
+      id: 7, label: "Day 9", nights: 1,
+      date: "Sun 26 Mar 2028",
+      location: "Albuquerque", state: "New Mexico",
+      coords: [35.0844, -106.6504],
+      drive: "Santa Fe → Albuquerque · ~65 mi · Turquoise Trail scenic detour",
+      summary: "Short drive day. Take the Turquoise Trail (NM-14) instead of I-25 — old mining towns, mountain views. Great chance for a slow morning in Santa Fe before leaving.",
+      highlights: [
+        "Turquoise Trail (Madrid, Cerrillos)",
+        "Old Town Plaza + San Felipe de Neri Church (1706)",
+        "Sandia Peak Tramway — sunset views",
+        "Central Avenue neon cruise"
+      ],
+      hotel: {
+        name: "Los Poblanos Historic Inn & Organic Farm",
+        status: "Upgrade pick",
+        statusClass: "upgrade",
+        note: "Lavender farm, foodie destination, 25-acre estate, 15 min from Old Town. The kind of place you remember from a milestone trip."
+      },
+      alts: [
+        "Hotel Albuquerque at Old Town — Bon Voyage's pick, walkable to Old Town"
+      ]
+    },
+    {
+      id: 8, label: "Day 10", nights: 1,
+      date: "Mon 27 Mar 2028",
+      location: "Holbrook", state: "Arizona",
+      coords: [34.9025, -110.1582],
+      drive: "Albuquerque → Holbrook · ~225 mi · Petrified Forest + Meteor Crater",
+      summary: "One of the most otherworldly driving days. Petrified Forest National Park in the morning, Meteor Crater in the afternoon. Sleep in a concrete teepee.",
+      highlights: [
+        "Petrified Forest National Park (Painted Desert overlook)",
+        "Meteor Crater — nearly a mile wide",
+        "Standin' on the Corner in Winslow, AZ",
+        "Wigwam Village photo at dusk"
+      ],
+      hotel: {
+        name: "Wigwam Motel (Wigwam Village #6)",
+        status: "Iconic",
+        statusClass: "iconic",
+        note: "'Have you slept in a wigwam lately?' Concrete teepees with vintage cars parked outside. Books up — reserve early."
+      },
+      alts: []
+    },
+    {
+      id: 9, label: "Day 11", nights: 1,
+      date: "Tue 28 Mar 2028",
+      location: "Grand Canyon", state: "Arizona",
+      coords: [36.0544, -112.1401],
+      drive: "Holbrook → Grand Canyon · ~165 mi · via Winslow + Williams",
+      summary: "South Rim is at 7,000 ft; March can bring snow on the rim, which is spectacular if it lands. Sleep ON the rim if at all possible.",
+      highlights: [
+        "Mather Point — first canyon view",
+        "Desert View Scenic Drive + Watchtower",
+        "Hermit Road shuttle",
+        "Sunset at Hopi Point or Yavapai",
+        "Star-gazing — designated International Dark Sky Park"
+      ],
+      hotel: {
+        name: "El Tovar Hotel",
+        status: "Upgrade pick — book FIRST",
+        statusClass: "upgrade",
+        note: "Historic 1905 lodge ON the South Rim. Walk to the canyon edge in pyjamas. Booking opens ~28 Feb 2027 (13 months ahead) and sells out same day. THIS is the priority booking item for the whole trip."
+      },
+      alts: [
+        "Bright Angel Lodge — historic, on the rim, more affordable",
+        "Yavapai Lodge — modern, in-park, easier to book",
+        "Holiday Inn The Squire (Tusayan) — Bon Voyage's pick, fallback"
+      ]
+    },
+    {
+      id: 10, label: "Day 12", nights: 1,
+      date: "Wed 29 Mar 2028",
+      location: "Kingman", state: "Arizona",
+      coords: [35.1894, -114.0530],
+      drive: "Grand Canyon → Kingman · ~190 mi · Williams + Seligman + Hackberry",
+      summary: "The most authentic stretch of original Route 66 still standing. Williams (last town bypassed by I-40), Seligman (where the preservation movement was born — visit Angel Delgadillo's barber shop), Hackberry General Store.",
+      highlights: [
+        "Williams, AZ — Route 66 main street",
+        "Seligman — Angel & Juan Delgadillo's Snow Cap Drive-In",
+        "Hackberry General Store",
+        "Kingman Route 66 Museum",
+        "Historic Hotel Brunswick / El Trovatore neon"
+      ],
+      hotel: {
+        name: "Hotel Brunswick Kingman",
+        status: "Historic",
+        statusClass: "iconic",
+        note: "Restored 1909 brick hotel — character over polish. Kingman is a small Route 66 town with no 'luxury' option; Brunswick is the authentic pick. One night, then on to the desert finale."
+      },
+      alts: [
+        "Springhill Suites Kingman — modern, comfortable alternative",
+        "Stay further on at Lake Havasu (off-route, would skip Oatman next morning)"
+      ]
+    },
+    {
+      id: 11, label: "Day 13–14", nights: 2,
+      date: "Thu 30 – Fri 31 Mar 2028",
+      location: "Santa Monica", state: "California",
+      coords: [34.0195, -118.4912],
+      drive: "Kingman → Santa Monica · ~330 mi · Oatman + Needles + Amboy + Barstow",
+      summary: "The big finale day on the Mother Road. Oatman (ghost town with wild burros wandering Main Street), Roy's Motel & Cafe at Amboy, Mojave to Barstow, then the Pacific. End-of-Route-66 sign at the Pier.",
+      highlights: [
+        "Oatman, AZ — wild burros, gunfight reenactments, mountain pass",
+        "Roy's Motel & Cafe, Amboy — peak Route 66 photo",
+        "Calico Ghost Town (drive-through)",
+        "Barstow Route 66 Mother Road Museum",
+        "'End of the Trail' sign — Santa Monica Pier",
+        "Day 14 free: Getty Center, Hollywood Sign, Malibu, or Beverly Hills"
+      ],
+      hotel: {
+        name: "Shutters on the Beach",
+        status: "Upgrade pick",
+        statusClass: "upgrade",
+        note: "Beachfront Cape Cod-style luxury directly on Santa Monica beach. The milestone-trip pick to wrap up the road trip."
+      },
+      alts: [
+        "Hotel Casa del Mar — 1926 beachfront grande dame, sister property to Shutters",
+        "Fairmont Miramar — gardens, classic Santa Monica",
+        "Ocean View Hotel — Bon Voyage's mid-range pick"
+      ]
+    },
+    {
+      id: 12, label: "Day 15–17", nights: 3,
+      date: "Sat 1 – Mon 3 Apr 2028",
+      location: "Anaheim · Disneyland", state: "California",
+      coords: [33.8121, -117.9190],
+      drive: "Santa Monica → Anaheim · ~45 mi (leave early to beat LA traffic)",
+      summary: "Three nights at the Happiest Place on Earth. Two parks (Disneyland Park + Disney California Adventure) plus a third day to repeat favourites or rest. A magical wrap to the milestone trip.",
+      highlights: [
+        "Disneyland Park — classic park, fireworks, World of Color",
+        "Disney California Adventure — Cars Land + Avengers Campus",
+        "Day 3: rest morning + favourite-rides redo, or Downtown Disney",
+        "Galaxy's Edge / Star Wars: Rise of the Resistance",
+        "Pixar Pier sunset",
+        "Character dining experience"
+      ],
+      isDisney: true,
+      hotel: {
+        name: "Disney's Grand Californian Hotel & Spa",
+        status: "Upgrade pick",
+        statusClass: "upgrade",
+        note: "ON-property luxury hotel with private entrance directly into Disney California Adventure. Craftsman-style architecture. Books ~7 months ahead — popular dates sell out same day."
+      },
+      alts: [
+        "Disneyland Hotel — classic original Disney hotel, monorail access",
+        "Disney's Paradise Pier Hotel — Disney value-deluxe option",
+        "Off-property: Westin Anaheim Resort or JW Marriott — better value, short walk to parks"
+      ]
+    },
+    {
+      id: 13, label: "Day 18", nights: 0,
+      date: "Tue 4 Apr 2028",
+      location: "LAX → Home", state: "California",
+      coords: [33.9416, -118.4085],
+      drive: "Anaheim → LAX · ~35 mi · drop the rental, fly LAX → LHR (~10 hrs)",
+      summary: "Fly home. Land in London the morning of Wed 5 April after the overnight crossing.",
+      highlights: [
+        "Drop rental car at LAX",
+        "Final In-N-Out burger en route?",
+        "LAX → LHR overnight, arrive Wed 5 April"
+      ],
+      hotel: null,
+      alts: []
+    }
+  ]
+};
+
+/* ---------- RENDER ---------- */
+const map = L.map('map', { scrollWheelZoom: false }).setView([36.5, -100], 4.3);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  maxZoom: 18
+}).addTo(map);
+
+const markers = {};
+const dayElems = {};
+
+function makeIcon(day, isActive) {
+  const cls = ['shield-marker'];
+  if (day.isDisney) cls.push('disney');
+  if (day.id === 13) cls.push('start-end');
+  if (isActive) cls.push('active');
+  const label = day.id === 13 ? '✈' : day.id;
+  return L.divIcon({
+    className: '',
+    html: `<div class="${cls.join(' ')}" data-id="${day.id}">${label}</div>`,
+    iconSize: [36, 36],
+    iconAnchor: [18, 18]
+  });
+}
+
+function setActive(id) {
+  Object.values(markers).forEach(m => {
+    m.setIcon(makeIcon(m._day, m._day.id === id));
+  });
+  Object.entries(dayElems).forEach(([k, el]) => {
+    el.classList.toggle('active', Number(k) === id);
+  });
+}
+
+function searchUrl(q) { return 'https://www.google.com/search?q=' + encodeURIComponent(q); }
+function mapUrl(q)    { return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
+function taUrl(q)     { return 'https://www.tripadvisor.com/Search?q=' + encodeURIComponent(q); }
+function ytUrl(q)     { return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q); }
+
+const routeCoords = [];
+const daysContainer = document.getElementById('days');
+
+trip.days.forEach(day => {
+  if (day.nights > 0) routeCoords.push(day.coords);
+
+  // Marker
+  const m = L.marker(day.coords, { icon: makeIcon(day, false) }).addTo(map);
+  m._day = day;
+  m.bindTooltip(`${day.label} — ${day.location} (${day.date})`, { direction: 'top', offset: [0, -16] });
+  m.on('click', () => {
+    setActive(day.id);
+    const el = dayElems[day.id];
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  markers[day.id] = m;
+
+  // Day card
+  const el = document.createElement('article');
+  el.className = 'day' + (day.isDisney ? ' disney-day' : '');
+  el.id = 'day-' + day.id;
+
+  const checkin = stayCheckIn[day.id];
+  const checkout = checkin ? addDays(checkin, day.nights) : null;
+  const bookingHref = day.hotel && checkin
+    ? bookingUrl(day.hotel.name + ' ' + day.location, checkin, checkout)
+    : (day.hotel ? searchUrl(day.hotel.name + ' booking.com') : '#');
+
+  const hotelHtml = day.hotel ? `
+    <div>
+      <div class="subhead">Hotel</div>
+      <div class="hotel">
+        <div class="hotel-name">
+          ${day.hotel.name}
+          ${day.hotel.status ? `<span class="hotel-status ${day.hotel.statusClass||''}">${day.hotel.status}</span>` : ''}
+        </div>
+        ${day.hotel.note ? `<div class="hotel-note">${day.hotel.note}</div>` : ''}
+        ${checkin ? `<div style="font-size:12px;color:var(--brown);margin-top:6px;font-family:'Special Elite',monospace;">${checkin} → ${checkout} · ${day.nights} night${day.nights>1?'s':''}</div>` : ''}
+        <div class="hotel-links">
+          <a href="${bookingHref}" target="_blank" rel="noopener"><strong>Booking.com</strong> (live, dates pre-filled)</a>
+          <a href="${taUrl(day.hotel.name + ' ' + day.location)}" target="_blank" rel="noopener"><strong>TripAdvisor</strong> reviews</a>
+          <a href="${searchUrl(day.hotel.name + ' ' + day.location)}" target="_blank" rel="noopener">Web search</a>
+          <a href="${mapUrl(day.hotel.name + ' ' + day.location)}" target="_blank" rel="noopener">Map</a>
+        </div>
+        ${day.alts && day.alts.length ? `
+          <div class="alts">
+            <strong>Alternatives:</strong>
+            <ul>${day.alts.map(a => `<li>${a}</li>`).join('')}</ul>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  ` : '';
+
+  el.innerHTML = `
+    <div class="day-header">
+      <span class="day-num">${day.label}</span>
+      <span class="day-date">${day.date}</span>
+      <h3 class="day-location">${day.location}<span class="day-state">, ${day.state}</span></h3>
+      ${day.nights > 0 ? `<span class="day-nights">${day.nights} night${day.nights>1?'s':''}</span>` : ''}
+    </div>
+    <p class="day-summary">${day.summary}</p>
+    <div class="day-meta">
+      <span>${day.drive}</span>
+      ${day.nights > 0 ? `<span><a href="${taUrl('Things to do in ' + day.location + ' ' + day.state)}" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:none;border-bottom:1px dotted var(--teal);">Things to do — TripAdvisor ↗</a></span>` : ''}
+      ${day.nights > 0 ? `<span><a href="${taUrl('Restaurants in ' + day.location + ' ' + day.state)}" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:none;border-bottom:1px dotted var(--teal);">Restaurants — TripAdvisor ↗</a></span>` : ''}
+      ${day.nights > 0 ? `<span><a href="${ytUrl('Route 66 ' + day.location + ' ' + day.state + ' travel guide')}" target="_blank" rel="noopener" style="color:var(--rust);text-decoration:none;border-bottom:1px dotted var(--rust);">Videos — YouTube ↗</a></span>` : ''}
+    </div>
+    <div class="day-grid">
+      <div>
+        <div class="subhead">Highlights</div>
+        <ul class="highlights">${day.highlights.map(h => `<li>${h}</li>`).join('')}</ul>
+      </div>
+      ${hotelHtml}
+    </div>
+  `;
+  el.addEventListener('click', () => {
+    setActive(day.id);
+    map.flyTo(day.coords, 7, { duration: 0.8 });
+  });
+  daysContainer.appendChild(el);
+  dayElems[day.id] = el;
+});
+
+// Route line
+L.polyline(routeCoords, {
+  color: '#C44536',
+  weight: 4,
+  opacity: 0.85,
+  dashArray: '8, 6',
+  lineCap: 'round'
+}).addTo(map);
+
+// Fit bounds
+map.fitBounds(L.latLngBounds(routeCoords).pad(0.15));
+
+/* ----- Birthday balloons on first open ----- */
+(function launchBalloons() {
+  const colors = ['#ff6b9d', '#ffb347', '#7dd3fc', '#a78bfa', '#ffd93d', '#6ee7b7', '#fb7185', '#f59e0b', '#C44536', '#D9A441'];
+  const N = 14;
+  for (let i = 0; i < N; i++) {
+    const b = document.createElement('div');
+    b.className = 'balloon';
+    const c = colors[Math.floor(Math.random() * colors.length)];
+    b.style.background = `radial-gradient(circle at 30% 28%, #ffffff66, ${c} 55%, ${c}dd)`;
+    b.style.color = c;
+    b.style.left = (Math.random() * 92 + 4) + 'vw';
+    b.style.animationDelay = (Math.random() * 1.8) + 's';
+    b.style.animationDuration = (7 + Math.random() * 4.5) + 's';
+    b.style.setProperty('--drift', (Math.random() * 160 - 80) + 'px');
+    b.style.setProperty('--rot', (Math.random() * 30 - 15) + 'deg');
+    document.body.appendChild(b);
+    setTimeout(() => b.remove(), 13000);
+  }
+})();
+</script>
+
+</body>
+</html>
