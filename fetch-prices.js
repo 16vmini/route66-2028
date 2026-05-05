@@ -151,6 +151,50 @@ function pickMatch(results, hotelName) {
   return best && bestScore > 0 ? best : null;
 }
 
+/* --- Flights via Booking COM 15 --- */
+function decodePrice(p) {
+  if (!p) return null;
+  return (p.units || 0) + (p.nanos || 0) / 1e9;
+}
+
+async function rapidFlightSearch(key, from, to, date, adults, currency) {
+  const params = new URLSearchParams({
+    fromId: from + '.AIRPORT',
+    toId: to + '.AIRPORT',
+    departDate: date,
+    adults: String(adults),
+    currency_code: currency,
+    sort: 'BEST',
+    pageNo: '1'
+  });
+  const data = await rapidGet(key, `/api/v1/flights/searchFlights?${params}`);
+  if (!data?.data?.flightOffers?.length) return null;
+  // Direct flights only (one leg per segment, on every segment of the offer)
+  const direct = data.data.flightOffers.filter(o =>
+    (o.segments || []).every(s => (s.legs || []).length === 1)
+  );
+  if (!direct.length) return null;
+  let cheapest = direct[0];
+  for (const o of direct) {
+    if (decodePrice(o.priceBreakdown?.total) < decodePrice(cheapest.priceBreakdown?.total)) cheapest = o;
+  }
+  const total = decodePrice(cheapest.priceBreakdown?.total);
+  const seg0 = cheapest.segments?.[0];
+  const legs = seg0?.legs || [];
+  const carriers = legs.flatMap(l => (l.carriersData || []).map(c => c.code))
+    .filter((v, i, a) => a.indexOf(v) === i);
+  const totalMinutes = seg0?.totalTime ? Math.round(seg0.totalTime / 60) : null;
+  return {
+    route: `${from} → ${to}`,
+    date,
+    price: total ? +total.toFixed(2) : null,
+    currency,
+    carrier: carriers.join('+'),
+    stops: Math.max(0, legs.length - 1),
+    durationMinutes: totalMinutes
+  };
+}
+
 function summarize(match, nights, currency) {
   if (!match) return null;
   const p = match.property || {};
@@ -231,11 +275,29 @@ async function fetchFx() {
 
   /* Flights */
   let flights = [];
-  if (config.amadeus?.apiKey && !config.amadeus.apiKey.startsWith('PASTE_')) {
+  const routes = [...(config.routes?.outbound || []), ...(config.routes?.return || [])];
+  if (config.rapidapi?.key && !config.rapidapi.key.startsWith('PASTE_') && routes.length) {
+    log(`fetching ${routes.length} flight route(s) via RapidAPI Booking COM 15…`);
+    for (const r of routes) {
+      // Sample dates one year earlier (same fallback as hotels) since 2028 is too far out
+      const sample = sampleDatesFor(r.date, r.date, 1);
+      const result = await rapidFlightSearch(config.rapidapi.key, r.from, r.to, sample.checkin, adults, currency);
+      if (result) {
+        result.actualDate = r.date;
+        result.sampledFrom = sample.checkin;
+        result.isIndicative = true;
+        flights.push(result);
+        const hrs = result.durationMinutes ? ` · ${Math.floor(result.durationMinutes/60)}h${result.durationMinutes%60}m` : '';
+        const stopsLbl = result.stops === 0 ? 'direct' : `${result.stops} stop${result.stops>1?'s':''}`;
+        log(`  ${result.route} (sample ${sample.checkin}): ${currency} ${result.price?.toLocaleString()} for ${adults} adults · ${result.carrier} · ${stopsLbl}${hrs}`);
+      } else {
+        log(`  ${r.from} → ${r.to} ${r.date}: no offers`);
+      }
+    }
+  } else if (config.amadeus?.apiKey && !config.amadeus.apiKey.startsWith('PASTE_')) {
     log('fetching flights via Amadeus…');
     try {
       const auth = await getAmadeusToken(config.amadeus);
-      const routes = [...(config.routes?.outbound || []), ...(config.routes?.return || [])];
       for (const r of routes) {
         const result = await amadeusFlightOffer(auth, { ...r, adults, currency });
         if (result) { flights.push(result); log(`  ${result.route} ${result.date}: ${currency} ${result.price.toLocaleString()} (${result.carrier}, ${result.stops}x)`); }
@@ -243,7 +305,7 @@ async function fetchFx() {
       }
     } catch (e) { warn('Amadeus flights failed:', e.message); }
   } else {
-    log('skipping flights — no Amadeus key configured.');
+    log('skipping flights — no key configured.');
   }
 
   /* Hotels */

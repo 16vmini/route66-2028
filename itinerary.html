@@ -355,9 +355,9 @@
   </div>
 
   <div class="panel" style="margin-bottom: 24px;">
-    <h3>Car Hire — Chicago O'Hare → LAX (one-way, 15 days)</h3>
+    <h3>Car Hire — Chicago O'Hare → Los Angeles (one-way, 15 days)</h3>
     <p style="margin: 0 0 10px; font-size: 14px; color: #5a4a3e;">
-      Pick up at <strong>ORD on Mon 20 Mar 2028</strong>, drop at <strong>LAX on Tue 4 Apr 2028</strong>.
+      Pick up at <strong>Chicago O'Hare Airport (ORD)</strong> on Mon 20 Mar 2028, drop at <strong>Los Angeles Airport (LAX)</strong> on Tue 4 Apr 2028.
       One-way drop fees vary a lot — comparing 4 sites usually saves £100–£300. Mid-size SUV recommended for two with luggage; convertible is fun but March can be chilly/wet on the high-altitude bits.
     </p>
     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:10px; font-size:14px;">
@@ -386,6 +386,7 @@
       Open-jaw routing (fly to Chicago, return from LA) usually beats round-trip from one city.
     </p>
     <div id="flight-links" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; font-size: 14px;"></div>
+    <div id="flight-prices" style="margin-top: 14px;"></div>
   </div>
 
   <div id="map"></div>
@@ -491,12 +492,12 @@ function gflightsMulti() {
   );
 }
 const flightLinks = [
-  { label: 'Open-jaw (recommended)', sub: 'LON → ORD outbound · LAX → LON return',
+  { label: 'Open-jaw (recommended)', sub: 'London → Chicago outbound, Los Angeles → London return',
     url: gflightsMulti(), kind: 'primary' },
-  { label: 'Outbound: LHR → ORD', sub: '18 Mar 2028',  url: skyOneWay('lhr','ord', OUTBOUND) },
-  { label: 'Outbound: LGW → ORD', sub: '18 Mar 2028',  url: skyOneWay('lgw','ord', OUTBOUND) },
-  { label: 'Return: LAX → LHR',   sub: '4 Apr 2028',   url: skyOneWay('lax','lhr', RETURN) },
-  { label: 'Return: LAX → LGW',   sub: '4 Apr 2028',   url: skyOneWay('lax','lgw', RETURN) },
+  { label: 'Outbound: London Heathrow → Chicago O\'Hare', sub: 'Sat 18 Mar 2028',  url: skyOneWay('lhr','ord', OUTBOUND) },
+  { label: 'Outbound: London Gatwick → Chicago O\'Hare',  sub: 'Sat 18 Mar 2028',  url: skyOneWay('lgw','ord', OUTBOUND) },
+  { label: 'Return: Los Angeles → London Heathrow',       sub: 'Tue 4 Apr 2028',   url: skyOneWay('lax','lhr', RETURN) },
+  { label: 'Return: Los Angeles → London Gatwick',        sub: 'Tue 4 Apr 2028',   url: skyOneWay('lax','lgw', RETURN) },
   { label: 'Compare on Skyscanner', sub: 'Multi-city / open-jaw search',
     url: 'https://www.skyscanner.net/g/multicity-flight-search/' }
 ];
@@ -982,6 +983,40 @@ L.polyline(routeCoords, {
 
 // Fit bounds
 map.fitBounds(L.latLngBounds(routeCoords).pad(0.15));
+
+  // Populate flight prices block
+  const flightPricesEl = document.getElementById('flight-prices');
+  if (flightPricesEl && pricesData?.flights?.length) {
+    const airportName = c => ({ LHR: 'London Heathrow', LGW: 'London Gatwick', ORD: 'Chicago O\'Hare', LAX: 'Los Angeles' }[c] || c);
+    const rows = pricesData.flights.map(f => {
+      const [from, to] = f.route.split(' → ');
+      const dur = f.durationMinutes ? `${Math.floor(f.durationMinutes/60)}h ${f.durationMinutes%60}m` : '—';
+      const stops = f.stops === 0 ? 'direct' : `${f.stops} stop${f.stops>1?'s':''}`;
+      return `<tr>
+        <td>${airportName(from)} → ${airportName(to)}</td>
+        <td><strong>£${Math.round(f.price).toLocaleString()}</strong></td>
+        <td>${stops} · ${dur}</td>
+        <td style="font-size:12px;color:var(--brown);">${f.carrier || '—'}</td>
+      </tr>`;
+    }).join('');
+    flightPricesEl.innerHTML = `
+      <div class="hotel-price" style="display:block; padding: 12px 14px;">
+        <div style="font-weight:600; color:var(--rust-dark); margin-bottom:6px;">
+          Sample prices for 2 adults — sort: BEST
+          <span class="indicative-badge">indicative</span>
+        </div>
+        <div style="font-size:12px; color:var(--brown); margin-bottom:8px;">
+          Sampled from same dates one year earlier (March/April 2027). Real 2028 fares unlock from May–Jul 2027.
+        </div>
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+          <thead><tr style="border-bottom:1px solid var(--sand); text-align:left;">
+            <th style="padding:6px 4px;">Route</th><th style="padding:6px 4px;">Price (2 adults)</th>
+            <th style="padding:6px 4px;">Stops · Duration</th><th style="padding:6px 4px;">Carrier</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }
 
   // Populate price-summary banner if we have data
   const summaryEl = document.getElementById('price-summary');

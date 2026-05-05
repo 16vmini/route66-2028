@@ -1,9 +1,34 @@
 {
-  "updatedAt": "2026-05-05T20:34:57.065Z",
+  "updatedAt": "2026-05-05T20:40:42.329Z",
   "provider": "rapidapi",
   "currency": "GBP",
   "adults": 2,
-  "flights": [],
+  "flights": [
+    {
+      "route": "LHR → ORD",
+      "date": "2027-03-18",
+      "price": 895.24,
+      "currency": "GBP",
+      "carrier": "AY+AA",
+      "stops": 0,
+      "durationMinutes": 525,
+      "actualDate": "2028-03-18",
+      "sampledFrom": "2027-03-18",
+      "isIndicative": true
+    },
+    {
+      "route": "LAX → LHR",
+      "date": "2027-04-04",
+      "price": 750.3,
+      "currency": "GBP",
+      "carrier": "UA",
+      "stops": 0,
+      "durationMinutes": 640,
+      "actualDate": "2028-04-04",
+      "sampledFrom": "2027-04-04",
+      "isIndicative": true
+    }
+  ],
   "hotels": [
     {
       "dayId": 1,
@@ -227,7 +252,7 @@
       "total": 993.01,
       "currency": "GBP",
       "reviewScore": 8.9,
-      "reviewCount": 3981,
+      "reviewCount": 3982,
       "reviewWord": "Fabulous"
     },
     {
@@ -255,6 +280,6 @@
   "fx": {
     "GBPUSD": 1.3534,
     "GBPEUR": 1.1582,
-    "at": "2026-05-05T20:34:57.065Z"
+    "at": "2026-05-05T20:40:42.328Z"
   }
 }
