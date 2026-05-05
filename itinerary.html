@@ -223,6 +223,34 @@
     margin-top: 10px; font-size: 13px; padding-top: 8px;
     border-top: 1px dashed var(--sand);
   }
+
+  /* ----- Live hotel prices ----- */
+  .hotel-price {
+    margin-top: 10px; padding: 9px 12px;
+    background: linear-gradient(90deg, #FFF8E7 0%, var(--cream) 100%);
+    border-left: 3px solid var(--gold);
+    border-radius: 4px;
+    font-size: 13px;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  }
+  .hotel-price strong { color: var(--rust-dark); font-family: 'Special Elite', monospace; }
+  .hotel-price .review { font-size: 12px; color: var(--brown); }
+  .indicative-badge {
+    font-size: 10px; background: var(--denim); color: white;
+    padding: 2px 7px; border-radius: 8px;
+    text-transform: uppercase; letter-spacing: 0.6px;
+  }
+  .price-summary {
+    display: none;
+    margin: 0 0 18px; padding: 12px 16px;
+    background: linear-gradient(90deg, #FFF8E7 0%, white 100%);
+    border: 1px solid var(--sand);
+    border-left: 4px solid var(--gold);
+    border-radius: 6px; font-size: 13px;
+    color: var(--brown); line-height: 1.65;
+  }
+  .price-summary strong { color: var(--rust-dark); }
+  .price-summary em { font-style: italic; color: #6a5a4a; }
   .alts strong { color: var(--brown); }
   .alts ul { margin: 4px 0 0; padding-left: 18px; }
 
@@ -363,6 +391,7 @@
   <div id="map"></div>
 
   <h2 class="section-title">Day-by-Day</h2>
+  <div id="price-summary" class="price-summary"></div>
   <div id="days" class="days"></div>
 
   <div class="panel" style="margin-top: 28px;">
@@ -373,14 +402,14 @@
     <table class="budget-table">
       <thead><tr><th>Line item</th><th>Notes</th><th style="text-align:right;">Estimate (£)</th></tr></thead>
       <tbody>
-        <tr><td>Flights (open-jaw, 2 adults)</td><td>LON → ORD + LAX → LON, premium economy</td><td class="num">2,400 – 3,800</td></tr>
+        <tr><td>Flights (open-jaw, 2 adults)</td><td>LON → ORD + LAX → LON, economy. Add ~£1,000+ for premium econ.</td><td class="num">1,200 – 2,000</td></tr>
         <tr><td>One-way car hire (15 days)</td><td>ORD pickup, LAX drop, mid-size SUV inc. drop fee</td><td class="num">900 – 1,500</td></tr>
         <tr><td>Fuel</td><td>~2,500 mi ÷ 27 mpg ≈ 92 US gal × $3.50 ≈ £240</td><td class="num">220 – 320</td></tr>
         <tr><td>Hotels (17 nights, upgrade tier)</td><td>Mix of iconic + boutique + Disney Grand Californian</td><td class="num">5,200 – 7,500</td></tr>
         <tr><td>Disney park tickets (3 days, 2 adults)</td><td>Park Hopper + Genie+ if added</td><td class="num">700 – 1,000</td></tr>
         <tr><td>Food, attractions, tips</td><td>~£100/day × 18 days, 2 adults</td><td class="num">1,800 – 2,400</td></tr>
         <tr><td>Travel insurance, ESTA, sundries</td><td></td><td class="num">200 – 350</td></tr>
-        <tr class="total"><td>Trip total (excl. car-buying side-project)</td><td></td><td class="num">11,400 – 16,900</td></tr>
+        <tr class="total"><td>Trip total (excl. car-buying side-project)</td><td></td><td class="num">10,200 – 15,100</td></tr>
       </tbody>
     </table>
   </div>
@@ -840,6 +869,18 @@ function ytUrl(q)     { return 'https://www.youtube.com/results?search_query=' +
 const routeCoords = [];
 const daysContainer = document.getElementById('days');
 
+(async () => {
+  // Fetch live prices (if available)
+  let priceByDay = {};
+  let pricesData = null;
+  try {
+    const res = await fetch('prices.json?t=' + Date.now(), { cache: 'no-store' });
+    if (res.ok) {
+      pricesData = await res.json();
+      pricesData.hotels?.forEach(h => priceByDay[h.dayId] = h);
+    }
+  } catch {}
+
 trip.days.forEach(day => {
   if (day.nights > 0) routeCoords.push(day.coords);
 
@@ -865,6 +906,14 @@ trip.days.forEach(day => {
     ? bookingUrl(day.hotel.name + ' ' + day.location, checkin, checkout)
     : (day.hotel ? searchUrl(day.hotel.name + ' booking.com') : '#');
 
+  const priceEntry = priceByDay[day.id];
+  const priceHtml = priceEntry?.total ? `
+    <div class="hotel-price">
+      <strong>£${Math.round(priceEntry.perNight)}/n · £${Math.round(priceEntry.total)} total</strong>
+      ${priceEntry.isIndicative ? '<span class="indicative-badge">indicative</span>' : ''}
+      ${priceEntry.reviewScore ? `<span class="review">${priceEntry.reviewScore}/10 · ${priceEntry.reviewCount?.toLocaleString() || '0'} reviews</span>` : ''}
+    </div>` : '';
+
   const hotelHtml = day.hotel ? `
     <div>
       <div class="subhead">Hotel</div>
@@ -875,6 +924,7 @@ trip.days.forEach(day => {
         </div>
         ${day.hotel.note ? `<div class="hotel-note">${day.hotel.note}</div>` : ''}
         ${checkin ? `<div style="font-size:12px;color:var(--brown);margin-top:6px;font-family:'Special Elite',monospace;">${checkin} → ${checkout} · ${day.nights} night${day.nights>1?'s':''}</div>` : ''}
+        ${priceHtml}
         <div class="hotel-links">
           <a href="${bookingHref}" target="_blank" rel="noopener"><strong>Booking.com</strong> (live, dates pre-filled)</a>
           <a href="${taUrl(day.hotel.name + ' ' + day.location)}" target="_blank" rel="noopener"><strong>TripAdvisor</strong> reviews</a>
@@ -932,6 +982,24 @@ L.polyline(routeCoords, {
 
 // Fit bounds
 map.fitBounds(L.latLngBounds(routeCoords).pad(0.15));
+
+  // Populate price-summary banner if we have data
+  const summaryEl = document.getElementById('price-summary');
+  if (summaryEl && pricesData?.hotels?.length) {
+    const priced = pricesData.hotels.filter(h => h.total);
+    if (priced.length) {
+      const totalCost   = priced.reduce((s, h) => s + h.total, 0);
+      const totalNights = priced.reduce((s, h) => s + (h.nights || 0), 0);
+      const indicative  = priced.some(h => h.isIndicative);
+      summaryEl.innerHTML =
+        `<strong>Indicative hotel snapshot:</strong> £${Math.round(totalCost).toLocaleString()} across ` +
+        `${totalNights} night${totalNights>1?'s':''} (${priced.length} of ${pricesData.hotels.length} hotels priced)` +
+        (indicative ? ' &nbsp;·&nbsp; <em>sampled from same dates one year earlier — March 2028 not yet bookable on Booking.com</em>' : '') +
+        ` &nbsp;·&nbsp; last fetched ${new Date(pricesData.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+      summaryEl.style.display = 'block';
+    }
+  }
+})();  // end async render wrapper
 
 /* ----- Birthday balloons on first open ----- */
 (function launchBalloons() {
