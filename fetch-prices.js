@@ -101,13 +101,20 @@ async function rapidGet(key, urlPath, retries = 3) {
     });
     if (res.ok) return res.json();
     if (res.status === 429) {
-      // rate limited — wait progressively longer
       const wait = 2000 * (attempt + 1);
       log(`  rate limited, waiting ${wait}ms…`);
       await sleep(wait);
       continue;
     }
-    warn(`  ${urlPath.split('?')[0]}: ${res.status}`);
+    // 401/403/404 etc — don't retry, give a useful message and stop the run
+    let body = '';
+    try { body = (await res.text()).slice(0, 200); } catch {}
+    if (res.status === 403 && body.includes('not subscribed')) {
+      fail('RapidAPI returned 403: "not subscribed to this API". ' +
+           'Re-subscribe to "Booking COM 15" by DataCrawler at ' +
+           'https://rapidapi.com/DataCrawler/api/booking-com15, then re-run.');
+    }
+    warn(`  ${urlPath.split('?')[0]}: ${res.status} ${body}`);
     return null;
   }
   warn(`  ${urlPath.split('?')[0]}: gave up after ${retries} retries`);

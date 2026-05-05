@@ -1,9 +1,8 @@
 {
-  "updatedAt": "2026-05-05T19:55:00.000Z",
+  "updatedAt": "2026-05-05T20:34:57.065Z",
   "provider": "rapidapi",
   "currency": "GBP",
   "adults": 2,
-  "_note": "Hotel prices below are INDICATIVE — sampled from the same calendar dates one year earlier (March 2027). Booking.com only indexes rates ~16 months ahead, so March 2028 isn't bookable yet. Real prices unlock around Jan-Feb 2027. Days 7-12 timed out due to RapidAPI free-tier rate limits — re-run later.",
   "flights": [],
   "hotels": [
     {
@@ -14,14 +13,18 @@
       "checkout": "2028-03-20",
       "nights": 2,
       "isIndicative": true,
-      "sampledFrom": { "checkin": "2027-03-18", "checkout": "2027-03-20", "yearsBack": 1 },
-      "matchedName": "LondonHouse Chicago, Curio Collection by Hilton",
+      "sampledFrom": {
+        "checkin": "2027-03-18",
+        "checkout": "2027-03-20",
+        "yearsBack": 1
+      },
+      "matchedName": "Riu Plaza Chicago",
       "perNight": 161.32,
       "total": 322.63,
       "currency": "GBP",
       "reviewScore": 9.1,
       "reviewCount": 7231,
-      "reviewWord": "Wonderful"
+      "reviewWord": "Superb"
     },
     {
       "dayId": 2,
@@ -31,14 +34,18 @@
       "checkout": "2028-03-21",
       "nights": 1,
       "isIndicative": true,
-      "sampledFrom": { "checkin": "2027-03-20", "checkout": "2027-03-21", "yearsBack": 1 },
-      "matchedName": "21c Museum Hotel St Louis",
+      "sampledFrom": {
+        "checkin": "2027-03-20",
+        "checkout": "2027-03-21",
+        "yearsBack": 1
+      },
+      "matchedName": "Radisson Hotel St Louis Downtown Convention Center",
       "perNight": 111.55,
       "total": 111.55,
       "currency": "GBP",
       "reviewScore": 5.3,
       "reviewCount": 1013,
-      "reviewWord": "Pleasant"
+      "reviewWord": "Passable"
     },
     {
       "dayId": 3,
@@ -48,14 +55,18 @@
       "checkout": "2028-03-22",
       "nights": 1,
       "isIndicative": true,
-      "sampledFrom": { "checkin": "2027-03-21", "checkout": "2027-03-22", "yearsBack": 1 },
+      "sampledFrom": {
+        "checkin": "2027-03-21",
+        "checkout": "2027-03-22",
+        "yearsBack": 1
+      },
       "matchedName": "Best Western Route 66 Rail Haven",
-      "perNight": 92.82,
-      "total": 92.82,
+      "perNight": 87.86,
+      "total": 87.86,
       "currency": "GBP",
-      "reviewScore": 8.0,
+      "reviewScore": 8,
       "reviewCount": 903,
-      "reviewWord": "Very Good"
+      "reviewWord": "Very good"
     },
     {
       "dayId": 4,
@@ -65,14 +76,18 @@
       "checkout": "2028-03-23",
       "nights": 1,
       "isIndicative": true,
-      "sampledFrom": { "checkin": "2027-03-22", "checkout": "2027-03-23", "yearsBack": 1 },
-      "matchedName": "21c Museum Hotel Oklahoma City",
+      "sampledFrom": {
+        "checkin": "2027-03-22",
+        "checkout": "2027-03-23",
+        "yearsBack": 1
+      },
+      "matchedName": "Omni Oklahoma City Hotel",
       "perNight": 307.86,
       "total": 307.86,
       "currency": "GBP",
       "reviewScore": 9.1,
       "reviewCount": 779,
-      "reviewWord": "Wonderful"
+      "reviewWord": "Superb"
     },
     {
       "dayId": 5,
@@ -82,14 +97,18 @@
       "checkout": "2028-03-24",
       "nights": 1,
       "isIndicative": true,
-      "sampledFrom": { "checkin": "2027-03-23", "checkout": "2027-03-24", "yearsBack": 1 },
+      "sampledFrom": {
+        "checkin": "2027-03-23",
+        "checkout": "2027-03-24",
+        "yearsBack": 1
+      },
       "matchedName": "The Big Texan Motel",
       "perNight": 81.55,
       "total": 81.55,
       "currency": "GBP",
       "reviewScore": 8.3,
       "reviewCount": 2985,
-      "reviewWord": "Very Good"
+      "reviewWord": "Very good"
     },
     {
       "dayId": 6,
@@ -99,61 +118,143 @@
       "checkout": "2028-03-26",
       "nights": 2,
       "isIndicative": true,
-      "sampledFrom": { "checkin": "2027-03-24", "checkout": "2027-03-26", "yearsBack": 1 },
+      "sampledFrom": {
+        "checkin": "2027-03-24",
+        "checkout": "2027-03-26",
+        "yearsBack": 1
+      },
       "matchedName": "La Fonda on the Plaza",
       "perNight": 241.27,
       "total": 482.53,
       "currency": "GBP",
       "reviewScore": 9.1,
       "reviewCount": 476,
-      "reviewWord": "Wonderful"
+      "reviewWord": "Superb"
     },
     {
       "dayId": 7,
       "name": "Los Poblanos Historic Inn",
       "city": "Albuquerque",
+      "checkin": "2028-03-26",
+      "checkout": "2028-03-27",
       "nights": 1,
-      "error": "rate-limited — retry later"
+      "isIndicative": true,
+      "sampledFrom": {
+        "checkin": "2027-03-26",
+        "checkout": "2027-03-27",
+        "yearsBack": 1
+      },
+      "error": "no name match in results"
     },
     {
       "dayId": 8,
       "name": "Wigwam Motel Holbrook",
       "city": "Holbrook",
+      "checkin": "2028-03-27",
+      "checkout": "2028-03-28",
       "nights": 1,
-      "error": "rate-limited — retry later"
+      "isIndicative": true,
+      "sampledFrom": {
+        "checkin": "2027-03-27",
+        "checkout": "2027-03-28",
+        "yearsBack": 1
+      },
+      "matchedName": "Quality Inn Holbrook near Petrified Forest",
+      "perNight": 83.35,
+      "total": 83.35,
+      "currency": "GBP",
+      "reviewScore": 8.2,
+      "reviewCount": 529,
+      "reviewWord": "Very good"
     },
     {
       "dayId": 9,
       "name": "El Tovar Hotel",
       "city": "Grand Canyon",
+      "checkin": "2028-03-28",
+      "checkout": "2028-03-29",
       "nights": 1,
-      "error": "rate-limited — retry later"
+      "isIndicative": true,
+      "sampledFrom": {
+        "checkin": "2027-03-28",
+        "checkout": "2027-03-29",
+        "yearsBack": 1
+      },
+      "matchedName": "Grand Canyon Railway Hotel",
+      "perNight": 234.84,
+      "total": 234.84,
+      "currency": "GBP",
+      "reviewScore": 8.6,
+      "reviewCount": 684,
+      "reviewWord": "Fabulous"
     },
     {
       "dayId": 10,
       "name": "Hotel Brunswick Kingman",
       "city": "Kingman",
+      "checkin": "2028-03-29",
+      "checkout": "2028-03-30",
       "nights": 1,
-      "error": "rate-limited — retry later"
+      "isIndicative": true,
+      "sampledFrom": {
+        "checkin": "2027-03-29",
+        "checkout": "2027-03-30",
+        "yearsBack": 1
+      },
+      "matchedName": "Ramada by Wyndham Kingman",
+      "perNight": 79.21,
+      "total": 79.21,
+      "currency": "GBP",
+      "reviewScore": 7.5,
+      "reviewCount": 2071,
+      "reviewWord": "Good"
     },
     {
       "dayId": 11,
       "name": "Shutters on the Beach",
       "city": "Santa Monica",
+      "checkin": "2028-03-30",
+      "checkout": "2028-04-01",
       "nights": 2,
-      "error": "rate-limited — retry later"
+      "isIndicative": true,
+      "sampledFrom": {
+        "checkin": "2027-03-30",
+        "checkout": "2027-04-01",
+        "yearsBack": 1
+      },
+      "matchedName": "Huntley Santa Monica Beach",
+      "perNight": 496.51,
+      "total": 993.01,
+      "currency": "GBP",
+      "reviewScore": 8.9,
+      "reviewCount": 3981,
+      "reviewWord": "Fabulous"
     },
     {
       "dayId": 12,
       "name": "Disney's Grand Californian Hotel & Spa",
       "city": "Anaheim",
+      "checkin": "2028-04-01",
+      "checkout": "2028-04-04",
       "nights": 3,
-      "error": "rate-limited — retry later"
+      "isIndicative": true,
+      "sampledFrom": {
+        "checkin": "2027-04-01",
+        "checkout": "2027-04-04",
+        "yearsBack": 1
+      },
+      "matchedName": "Anaheim Majestic Garden Hotel",
+      "perNight": 197.86,
+      "total": 593.57,
+      "currency": "GBP",
+      "reviewScore": 8.1,
+      "reviewCount": 5311,
+      "reviewWord": "Very good"
     }
   ],
   "fx": {
     "GBPUSD": 1.3534,
     "GBPEUR": 1.1582,
-    "at": "2026-05-05T20:11:09.203Z"
+    "at": "2026-05-05T20:34:57.065Z"
   }
 }
