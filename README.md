@@ -1,4 +1,4 @@
-# Route 66 — A 40th Birthday Adventure
+# Route 66 — A 50th Birthday Adventure
 
 A planning page for a Route 66 road trip, **18 March – 4 April 2028**, Chicago to Santa Monica with a Disneyland finish.
 
