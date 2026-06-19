@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-05T20:40:42.329Z",
+  "updatedAt": "2026-06-19T10:13:41.131Z",
   "provider": "rapidapi",
   "currency": "GBP",
   "adults": 2,
@@ -7,11 +7,11 @@
     {
       "route": "LHR → ORD",
       "date": "2027-03-18",
-      "price": 895.24,
+      "price": 924.79,
       "currency": "GBP",
-      "carrier": "AY+AA",
+      "carrier": "BA",
       "stops": 0,
-      "durationMinutes": 525,
+      "durationMinutes": 545,
       "actualDate": "2028-03-18",
       "sampledFrom": "2027-03-18",
       "isIndicative": true
@@ -19,11 +19,11 @@
     {
       "route": "LAX → LHR",
       "date": "2027-04-04",
-      "price": 750.3,
+      "price": 488.19,
       "currency": "GBP",
-      "carrier": "UA",
+      "carrier": "VS",
       "stops": 0,
-      "durationMinutes": 640,
+      "durationMinutes": 650,
       "actualDate": "2028-04-04",
       "sampledFrom": "2027-04-04",
       "isIndicative": true
@@ -43,13 +43,13 @@
         "checkout": "2027-03-20",
         "yearsBack": 1
       },
-      "matchedName": "Riu Plaza Chicago",
-      "perNight": 161.32,
-      "total": 322.63,
+      "matchedName": "LondonHouse Chicago, Curio Collection by Hilton",
+      "perNight": 208.59,
+      "total": 417.17,
       "currency": "GBP",
-      "reviewScore": 9.1,
-      "reviewCount": 7231,
-      "reviewWord": "Superb"
+      "reviewScore": 8.9,
+      "reviewCount": 760,
+      "reviewWord": "Fabulous"
     },
     {
       "dayId": 2,
@@ -65,11 +65,11 @@
         "yearsBack": 1
       },
       "matchedName": "Radisson Hotel St Louis Downtown Convention Center",
-      "perNight": 111.55,
-      "total": 111.55,
+      "perNight": 112.06,
+      "total": 112.06,
       "currency": "GBP",
-      "reviewScore": 5.3,
-      "reviewCount": 1013,
+      "reviewScore": 5.2,
+      "reviewCount": 1130,
       "reviewWord": "Passable"
     },
     {
@@ -86,12 +86,12 @@
         "yearsBack": 1
       },
       "matchedName": "Best Western Route 66 Rail Haven",
-      "perNight": 87.86,
-      "total": 87.86,
+      "perNight": 94.95,
+      "total": 94.95,
       "currency": "GBP",
-      "reviewScore": 8,
-      "reviewCount": 903,
-      "reviewWord": "Very good"
+      "reviewScore": 7.9,
+      "reviewCount": 872,
+      "reviewWord": "Good"
     },
     {
       "dayId": 4,
@@ -107,11 +107,11 @@
         "yearsBack": 1
       },
       "matchedName": "Omni Oklahoma City Hotel",
-      "perNight": 307.86,
-      "total": 307.86,
+      "perNight": 314.9,
+      "total": 314.9,
       "currency": "GBP",
       "reviewScore": 9.1,
-      "reviewCount": 779,
+      "reviewCount": 756,
       "reviewWord": "Superb"
     },
     {
@@ -128,11 +128,11 @@
         "yearsBack": 1
       },
       "matchedName": "The Big Texan Motel",
-      "perNight": 81.55,
-      "total": 81.55,
+      "perNight": 89.04,
+      "total": 89.04,
       "currency": "GBP",
       "reviewScore": 8.3,
-      "reviewCount": 2985,
+      "reviewCount": 2946,
       "reviewWord": "Very good"
     },
     {
@@ -149,11 +149,11 @@
         "yearsBack": 1
       },
       "matchedName": "La Fonda on the Plaza",
-      "perNight": 241.27,
-      "total": 482.53,
+      "perNight": 246.78,
+      "total": 493.57,
       "currency": "GBP",
       "reviewScore": 9.1,
-      "reviewCount": 476,
+      "reviewCount": 500,
       "reviewWord": "Superb"
     },
     {
@@ -184,13 +184,13 @@
         "checkout": "2027-03-28",
         "yearsBack": 1
       },
-      "matchedName": "Quality Inn Holbrook near Petrified Forest",
-      "perNight": 83.35,
-      "total": 83.35,
+      "matchedName": "La Quinta Inn & Suites by Wyndham Holbrook Petrified Forest",
+      "perNight": 123.83,
+      "total": 123.83,
       "currency": "GBP",
-      "reviewScore": 8.2,
-      "reviewCount": 529,
-      "reviewWord": "Very good"
+      "reviewScore": 8.7,
+      "reviewCount": 791,
+      "reviewWord": "Fabulous"
     },
     {
       "dayId": 9,
@@ -205,13 +205,13 @@
         "checkout": "2027-03-29",
         "yearsBack": 1
       },
-      "matchedName": "Grand Canyon Railway Hotel",
-      "perNight": 234.84,
-      "total": 234.84,
+      "matchedName": "El Tovar - Inside the Park",
+      "perNight": 326.71,
+      "total": 326.71,
       "currency": "GBP",
-      "reviewScore": 8.6,
-      "reviewCount": 684,
-      "reviewWord": "Fabulous"
+      "reviewScore": null,
+      "reviewCount": null,
+      "reviewWord": null
     },
     {
       "dayId": 10,
@@ -226,13 +226,13 @@
         "checkout": "2027-03-30",
         "yearsBack": 1
       },
-      "matchedName": "Ramada by Wyndham Kingman",
-      "perNight": 79.21,
-      "total": 79.21,
+      "matchedName": "avid hotel Kingman - Medical Center Area by IHG",
+      "perNight": 114.1,
+      "total": 114.1,
       "currency": "GBP",
-      "reviewScore": 7.5,
-      "reviewCount": 2071,
-      "reviewWord": "Good"
+      "reviewScore": null,
+      "reviewCount": null,
+      "reviewWord": null
     },
     {
       "dayId": 11,
@@ -248,11 +248,11 @@
         "yearsBack": 1
       },
       "matchedName": "Huntley Santa Monica Beach",
-      "perNight": 496.51,
-      "total": 993.01,
+      "perNight": 465.05,
+      "total": 930.09,
       "currency": "GBP",
       "reviewScore": 8.9,
-      "reviewCount": 3982,
+      "reviewCount": 4014,
       "reviewWord": "Fabulous"
     },
     {
@@ -268,18 +268,18 @@
         "checkout": "2027-04-04",
         "yearsBack": 1
       },
-      "matchedName": "Anaheim Majestic Garden Hotel",
-      "perNight": 197.86,
-      "total": 593.57,
+      "matchedName": "Anaheim Hotel",
+      "perNight": 210.33,
+      "total": 631,
       "currency": "GBP",
-      "reviewScore": 8.1,
-      "reviewCount": 5311,
+      "reviewScore": 8.2,
+      "reviewCount": 1036,
       "reviewWord": "Very good"
     }
   ],
   "fx": {
-    "GBPUSD": 1.3534,
-    "GBPEUR": 1.1582,
-    "at": "2026-05-05T20:40:42.328Z"
+    "GBPUSD": 1.3229,
+    "GBPEUR": 1.1542,
+    "at": "2026-06-19T10:13:41.130Z"
   }
 }

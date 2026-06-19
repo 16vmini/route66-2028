@@ -235,6 +235,7 @@
   }
   .hotel-price strong { color: var(--rust-dark); font-family: 'Special Elite', monospace; }
   .hotel-price .review { font-size: 12px; color: var(--brown); }
+  .hotel-price .priced-via { width: 100%; font-size: 11px; color: var(--brown); font-style: italic; }
   .indicative-badge {
     font-size: 10px; background: var(--denim); color: white;
     padding: 2px 7px; border-radius: 8px;
@@ -908,11 +909,27 @@ trip.days.forEach(day => {
     : (day.hotel ? searchUrl(day.hotel.name + ' booking.com') : '#');
 
   const priceEntry = priceByDay[day.id];
+  // A live price may come from a different (proxy) property when the named hotel
+  // isn't indexed on Booking.com. Surface that so the figure isn't mistaken for the real one.
+  const isProxyMatch = (intended, matched, city) => {
+    if (!matched) return false;
+    // Generic hospitality words and the city name overlap across unrelated hotels —
+    // ignore them so we compare on the distinctive property/brand tokens only.
+    const STOP = new Set(['hotel','hotels','motel','inn','resort','spa','beach','suites','lodge','plaza','house','collection','historic']);
+    const cityWords = (city || '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(Boolean);
+    cityWords.forEach(w => STOP.add(w));
+    const norm = (s) => s.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(w => w.length > 3 && !STOP.has(w));
+    const a = norm(intended), b = new Set(norm(matched));
+    return a.length > 0 && !a.some(w => b.has(w));
+  };
+  const proxyHtml = (priceEntry?.total && isProxyMatch(day.hotel?.name || '', priceEntry.matchedName, priceEntry.city || day.location))
+    ? `<span class="priced-via">priced via ${priceEntry.matchedName} (nearest indexed property)</span>` : '';
   const priceHtml = priceEntry?.total ? `
     <div class="hotel-price">
       <strong>£${Math.round(priceEntry.perNight)}/n · £${Math.round(priceEntry.total)} total</strong>
       ${priceEntry.isIndicative ? '<span class="indicative-badge">indicative</span>' : ''}
       ${priceEntry.reviewScore ? `<span class="review">${priceEntry.reviewScore}/10 · ${priceEntry.reviewCount?.toLocaleString() || '0'} reviews</span>` : ''}
+      ${proxyHtml}
     </div>` : '';
 
   const hotelHtml = day.hotel ? `
